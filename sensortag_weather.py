@@ -11,11 +11,11 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 
 # configurations to be set accordingly
-SENSORTAG_ADDRESS = "24:71:89:E6:AD:84"
+SENSORTAG_ADDRESS = "54:6C:0E:52:DD:94"
 GDOCS_OAUTH_JSON = "raspberry-pi-sensortag-97386df66227.json"
 GDOCS_SPREADSHEET_NAME = "raspberry-pi-sensortag"
 GDOCS_WORKSHEET_NAME = "data"
-FREQUENCY_SECONDS = 54.0  # it takes about 4-5 seconds to obtain readings and upload to google sheets
+FREQUENCY_SECONDS = 5.0  # it takes about 4-5 seconds to obtain readings and upload to google sheets
 
 
 def enable_sensors(tag):
@@ -127,9 +127,9 @@ def append_readings(worksheet, readings):
 def main():
     print('Connecting to {}'.format(SENSORTAG_ADDRESS))
     tag = SensorTag(SENSORTAG_ADDRESS)
-    worksheet = login_open_sheet(GDOCS_OAUTH_JSON, GDOCS_SPREADSHEET_NAME, GDOCS_WORKSHEET_NAME)
+    #worksheet = login_open_sheet(GDOCS_OAUTH_JSON, GDOCS_SPREADSHEET_NAME, GDOCS_WORKSHEET_NAME)
 
-    print('Logging sensor measurements to {0} every {1} seconds.'.format(GDOCS_SPREADSHEET_NAME, FREQUENCY_SECONDS))
+    #print('Logging sensor measurements to {0} every {1} seconds.'.format(GDOCS_SPREADSHEET_NAME, FREQUENCY_SECONDS))
     print('Press Ctrl-C to quit.')
     while True:
         # get sensor readings
@@ -145,12 +145,8 @@ def main():
         print("Humidity reading:\t{}, temperature:\t{}".format(readings["humidity"], readings["humidity_temp"]))
         print("Barometer reading:\t{}, temperature:\t{}".format(readings["pressure"], readings["baro_temp"]))
         print("Luxmeter reading:\t{}".format(readings["light"]))
-
-        worksheet = append_readings(worksheet, readings)
-        # login if necessary.
-        if worksheet is None:
-            worksheet = login_open_sheet(GDOCS_OAUTH_JSON, GDOCS_SPREADSHEET_NAME, GDOCS_WORKSHEET_NAME)
-            continue
+        with open("out.csv","a") as f:
+            f.write("%s, %f\n"%(datetime.datetime.now(), readings["humidity"]))
 
         print()
         time.sleep(FREQUENCY_SECONDS)
