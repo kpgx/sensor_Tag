@@ -18,7 +18,6 @@ INTERESTED_SENSORS = [LIGHT]
 OUT_FILE = "lux.csv"
 TIME_BETWEEN_READS = 5
 TIME_BETWEEN_WRITES = 1
-INIT_WAIT = 5
 TIME_BETWEEN_RETRY = 5
 
 SENSOR_TAG_LIST = [
@@ -203,8 +202,6 @@ def main():
     for sensor_tag in SENSOR_TAG_LIST:
         Thread(target=collect_lux_readings, args=(sensor_tag["label"], sensor_tag["ble_mac"])).start()
         time.sleep(1)
-    print("going to sleep for seconds", INIT_WAIT)
-    time.sleep(INIT_WAIT)
     process_readings()
 
 
