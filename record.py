@@ -158,14 +158,15 @@ def collect_lux_readings(label, ble_mac):
     print(ble_mac, label, "connected")
     while 1:
         timestamp = int(time.time())
-        if timestamp % TIME_BETWEEN_READS == 0:  # for the sync purposes between other recordings
-            readings = get_readings(tag, INTERESTED_SENSORS)
-            if not readings:
-                tag = get_new_tag_reference(ble_mac, label)
-                continue
-            readings["label"] = label
-            LUX_READINGS.append(readings)
-        time.sleep(1)
+        timestamp = timestamp - 1  # to compensate the saturation time after turning the sensors on
+        while timestamp % TIME_BETWEEN_READS != 0:  # for the sync purposes between other recordings
+            time.sleep(0.2)
+        readings = get_readings(tag, INTERESTED_SENSORS)
+        if not readings:
+            tag = get_new_tag_reference(ble_mac, label)
+            continue
+        readings["label"] = label
+        LUX_READINGS.append(readings)
 
 
 def process_readings():
